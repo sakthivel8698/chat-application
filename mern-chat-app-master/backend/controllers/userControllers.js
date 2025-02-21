@@ -22,6 +22,8 @@ const allUsers = asyncHandler(async (req, res) => {
 //@description     Register new user
 //@route           POST /api/user/
 //@access          Public
+
+
 const registerUser = asyncHandler(async (req, res) => {
   const { name, email, password, pic } = req.body;
 
@@ -58,6 +60,8 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new Error("User not found");
   }
 });
+
+
 
 //@description     Auth the user
 //@route           POST /api/users/login

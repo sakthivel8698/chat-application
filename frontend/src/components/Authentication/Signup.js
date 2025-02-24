@@ -5,13 +5,13 @@ import { VStack } from "@chakra-ui/layout";
 import { useToast } from "@chakra-ui/toast";
 import axios from "axios";
 import { useState } from "react";
-// import { useHistory } from "react-router";
- 
+import { useNavigate } from "react-router";
+
 const Signup = () => {
   const [show, setShow] = useState(false);
   const handleClick = () => setShow(!show);
   const toast = useToast();
-  // const history = useHistory();
+  const navigate = useNavigate();
 
   const [name, setName] = useState();
   const [email, setEmail] = useState();
@@ -20,68 +20,92 @@ const Signup = () => {
   const [pic, setPic] = useState();
   const [picLoading, setPicLoading] = useState(false);
 
-  const submitHandler = async () => {
-    // setPicLoading(true);
-    // if (!name || !email || !password || !confirmpassword) {
-    //   toast({
-    //     title: "Please Fill all the Feilds",
-    //     status: "warning",
-    //     duration: 5000,
-    //     isClosable: true,
-    //     position: "bottom",
-    //   });
-    //   setPicLoading(false);
-    //   return;
-    // }
-    // if (password !== confirmpassword) {
-    //   toast({
-    //     title: "Passwords Do Not Match",
-    //     status: "warning",
-    //     duration: 5000,
-    //     isClosable: true,
-    //     position: "bottom",
-    //   });
-    //   return;
-    // }
-    // console.log(name, email, password, pic);
-    // try {
-    //   const config = {
-    //     headers: {
-    //       "Content-type": "application/json",
-    //     },
-    //   };
-    //   const { data } = await axios.post(
-    //     "/api/user",
-    //     {
-    //       name,
-    //       email,
-    //       password,
-    //       pic,
-    //     },
-    //     config
-    //   );
-    //   console.log(data);
-    //   toast({
-    //     title: "Registration Successful",
-    //     status: "success",
-    //     duration: 5000,
-    //     isClosable: true,
-    //     position: "bottom",
-    //   });
-    //   localStorage.setItem("userInfo", JSON.stringify(data));
-    //   setPicLoading(false);
-    //   history.push("/chats");
-    // } catch (error) {
-    //   toast({
-    //     title: "Error Occured!",
-    //     description: error.response.data.message,
-    //     status: "error",
-    //     duration: 5000,
-    //     isClosable: true,
-    //     position: "bottom",
-    //   });
-    //   setPicLoading(false);
-    // }
+  const submitHandler = async (e) => {
+    // e.preventDefault();
+
+    console.log("handle submit called");
+
+    setPicLoading(true);
+
+    const formInp = {
+      name: name,
+      email: email,
+      password: password,
+      pic: pic,
+    };
+
+    if (!name || !email || !password || !confirmpassword) {
+      toast({
+        title: "Please Fill all the Feilds",
+        status: "warning",
+        duration: 5000,
+        isClosable: true,
+        position: "top",
+      });
+      // setTimeout(() => {
+      setPicLoading(false);
+      // }, 1000);
+      // console.log("if called");
+      return;
+    }
+
+    if (password !== confirmpassword) {
+      toast({
+        title: "Passwords Do Not Match",
+        status: "warning",
+        duration: 5000,
+        isClosable: true,
+        position: "top",
+      });
+      setPicLoading(false);
+      return;
+    }
+
+    // // console.log(name, email, password, pic);
+
+    try {
+      const config = {
+        headers: {
+          "Content-type": "application/json",
+        },
+      };
+
+      const formInp = {
+        name: name,
+        email: email,
+        password: password,
+        pic: pic,
+      };
+
+      const { data } = await axios.post(
+        `${`http://localhost:5000/api/user/register`}`,
+        formInp,
+        config
+      );
+      // console.log(data);
+      toast({
+        title: "Registration Successful",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom",
+      });
+
+      // localStorage.setItem("userInfo", JSON.stringify(data));
+      setPicLoading(false);
+      // navigate("/");
+      window.location.reload();
+    } catch (error) {
+      toast({
+        title: "Error Occured!",
+        description: error.response.data.message,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom",
+      });
+      setPicLoading(false);
+    }
   };
 
   const postDetails = (pics) => {
@@ -185,11 +209,12 @@ const Signup = () => {
           onChange={(e) => postDetails(e.target.files[0])}
         />
       </FormControl>
+      {console.log("picLoading", picLoading)}
       <Button
         colorScheme="blue"
         width="100%"
         style={{ marginTop: 15 }}
-        onClick={submitHandler}
+        onClick={(e) => submitHandler(e)}
         isLoading={picLoading}
       >
         Sign Up

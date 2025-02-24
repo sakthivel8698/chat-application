@@ -65,7 +65,26 @@ const login = async (req, res) => {
 };
 
 const allUsers = async (req, res) => {
+  console.log("req.query", req.query);
 
-}
+  try {
+    const keyword = req.query.search
+      ? {
+          $or: [
+            { name: { $regex: req.query.search, $options: "i" } },
+            { email: { $regex: req.query.search, $options: "i" } },
+          ],
+        }
+      : {};
 
-module.exports = { registerUser, login };
+    // const users = await User.find().select("-password");
+    const users = await User.find(keyword).select("-password");
+    return res
+      .status(200)
+      .json({ message: "user fetched successfully", data: users });
+  } catch (error) {
+    console.log("error", error);
+  }
+};
+
+module.exports = { registerUser, login, allUsers };
